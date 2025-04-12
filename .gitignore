@@ -1,0 +1,17 @@
+
+target/
+dbt_packages/
+logs/
+
+# Ignore Python virtualenv
+.venv/
+__pycache__/
+*.pyc
+
+# Ignore dbt build artifacts
+dbt_modules/
+dbt_packages/
+target/
+dbt.log
+manifest.json
+run_results.json
