@@ -3,6 +3,10 @@ version: 2
 sources:
   - name: raw
     database: AwsDataCatalog
+    quoting:
+      database: false
+      schema: false
+      identifier: false
     schema: jaffle_athena
     tables:
       - name: raw_customers

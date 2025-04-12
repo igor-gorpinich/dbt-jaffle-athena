@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: Staging layer for customers
+    columns:
+      - name: id
+        description: Unique customer ID
+        tests:
+          - not_null
+          - unique
+      - name: email
+        tests:
+          - not_null
+          - unique
+      - name: country
+        tests:
+          - accepted_values:
+              values: ["US", "UK", "BE", "FR", "DE"]

@@ -19,6 +19,11 @@ clean-targets:
 models:
   jaffle_athena:
     +materialized: view
+    +quote_columns: false
+    +quoting:
+      database: false
+      schema: false
+      identifier: false
     staging:
       +enabled: true
     marts:
