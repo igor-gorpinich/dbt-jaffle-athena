@@ -1,0 +1,53 @@
+name: Daily dbt tests and freshness check
+
+on:
+  schedule:
+    - cron: '5 4 * * *'  # Runs daily at 04:05 UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  dbt-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dbt
+        run: pip install dbt-athena-community
+
+      - name: Write dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_PROFILES_YML }}" > ~/.dbt/profiles.yml
+
+      - name: Run dbt deps
+        run: dbt deps
+
+      - name: Run dbt tests
+        run: dbt test --store-failures
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Check source freshness
+        run: dbt source freshness --output json
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Upload test results to S3
+        run: |
+          aws s3 cp target/run_results.json s3://igor-athena-bucket-20250412/test/run_results.json
+          aws s3 cp target/sources.json s3://igor-athena-bucket-20250412/test/sources.json
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
