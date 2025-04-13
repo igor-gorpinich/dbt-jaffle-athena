@@ -1,13 +1,22 @@
-name: Daily dbt tests and freshness check
+name: Daily dbt test + freshness check
 
 on:
   schedule:
-    - cron: '5 4 * * *'  # Runs daily at 04:05 UTC
-  workflow_dispatch:  # Allow manual trigger
+    - cron: '10 4 * * *'  # Daily at 04:10 UTC
+  workflow_dispatch:
 
 jobs:
   dbt-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      BUCKET: igor-athena-bucket-20250412
 
     steps:
       - name: Checkout repo
@@ -29,25 +38,27 @@ jobs:
       - name: Run dbt deps
         run: dbt deps
 
+      - name: Set timestamp vars
+        id: ts
+        run: |
+          echo "year=$(date -u +%Y)" >> "$GITHUB_OUTPUT"
+          echo "month=$(date -u +%m)" >> "$GITHUB_OUTPUT"
+          echo "day=$(date -u +%d)" >> "$GITHUB_OUTPUT"
+
       - name: Run dbt tests
         run: dbt test --store-failures
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Check source freshness
         run: dbt source freshness --output json
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      - name: Upload test results to S3
+      - name: Upload results to S3 (partitioned paths)
         run: |
-          aws s3 cp target/run_results.json s3://igor-athena-bucket-20250412/test/run_results.json
-          aws s3 cp target/sources.json s3://igor-athena-bucket-20250412/test/sources.json
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          aws s3 cp target/run_results.json s3://$BUCKET/test/year=${{ steps.ts.outputs.year }}/month=${{ steps.ts.outputs.month }}/day=${{ steps.ts.outputs.day }}/run_results.json
+          aws s3 cp target/sources.json s3://$BUCKET/test/year=${{ steps.ts.outputs.year }}/month=${{ steps.ts.outputs.month }}/day=${{ steps.ts.outputs.day }}/sources.json
+
+      - name: Fail on any test or freshness failure
+        run: |
+          if grep -q '"failures": [^0]' target/run_results.json || grep -q '"status": "error"' target/sources.json; then
+            echo "🚨 Tests or freshness checks failed!"
+            exit 1
+          fi
