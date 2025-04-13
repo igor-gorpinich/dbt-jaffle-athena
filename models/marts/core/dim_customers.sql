@@ -7,6 +7,5 @@ with customers as (
 select
     customer_id,
     first_name,
-    last_name,
-    'dummy' as dummy
+    upper(last_name) as last_name
 from customers
