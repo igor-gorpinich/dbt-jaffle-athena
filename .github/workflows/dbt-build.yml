@@ -1,13 +1,21 @@
-name: Run dbt build on main
+name: Scheduled or Manual dbt run (state-aware)
 
 on:
   push:
     branches: [main]
+
   schedule:
-    - cron: '0 4 * * *'  # every day at 04:00 UTC
+    - cron: '0 4 * * *'  # daily at 04:00 UTC
+
+  workflow_dispatch:
+    inputs:
+      triggerBuild:
+        description: 'Trigger a dbt run manually'
+        required: false
+        type: boolean
 
 jobs:
-  dbt-build:
+  dbt-state-aware:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,20 +30,19 @@ jobs:
       - name: Install dbt
         run: pip install dbt-athena-community
 
-      - name: Write dbt profile from secret
+      - name: Write dbt profile
         run: |
           mkdir -p ~/.dbt
           echo "${{ secrets.DBT_PROFILES_YML }}" > ~/.dbt/profiles.yml
 
-
-
-      - name: Download previous manifest.json
-        uses: actions/download-artifact@v2
+      - name: Try to download previous manifest (optional)
+        uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
         with:
           name: manifest
           path: .dbt-state
 
-      - name: State-aware dbt build
+      - name: dbt build (state-aware)
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -44,20 +51,19 @@ jobs:
           dbt deps
           dbt compile
           if [ -f .dbt-state/manifest.json ]; then
-            echo "Running state-aware build"
+            echo "Previous manifest found — running state-aware build"
             dbt build --select state:modified+ --defer --state .dbt-state/
           else
-            echo "No previous manifest found — running full build"
+            echo "No manifest found — running full build"
             dbt build
           fi
-      - name: Upload new manifest.json
+          dbt docs generate
+
+      - name: Upload new manifest for next run
         uses: actions/upload-artifact@v2
         with:
           name: manifest
           path: target/manifest.json
-
-      - name: Generate dbt docs
-        run: dbt docs generate
 
       - name: Deploy dbt docs to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
