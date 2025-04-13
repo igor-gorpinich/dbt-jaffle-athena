@@ -2,7 +2,7 @@ name: Deploy dbt Docs to S3
 
 on:
   push:
-    branches: [ main ]  # Or your deploy branch
+    branches: [ main ]
 
 jobs:
   deploy-docs:
@@ -23,8 +23,8 @@ jobs:
       - name: Generate dbt docs
         run: |
           dbt deps
-          dbt compile
-          dbt docs generate
+          dbt compile --profiles-dir profiles
+          dbt docs generate --profiles-dir profiles
 
       - name: Upload to S3
         env:

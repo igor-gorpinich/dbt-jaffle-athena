@@ -1,0 +1,9 @@
+default:
+  target: dev
+  outputs:
+    dev:
+      type: athena
+      database: jaffle_athena
+      s3_staging_dir: s3://your-athena-query-results/
+      region_name: eu-west-1
+      work_group: primary
