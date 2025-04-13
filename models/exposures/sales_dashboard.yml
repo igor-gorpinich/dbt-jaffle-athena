@@ -4,7 +4,7 @@ version: 2
 
 exposures:
   - name: sales_dashboard
-    label: Sales Dashboard (Metabase)
+    label: Sales Dashboard Power BI
     type: dashboard
     maturity: high
     url: direct_link_to_dashboard.com
