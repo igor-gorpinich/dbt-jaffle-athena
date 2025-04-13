@@ -20,6 +20,11 @@ jobs:
       - name: Install dbt
         run: pip install dbt-athena-community
 
+      - name: Write dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_PROFILES_YML }}" > ~/.dbt/profiles.yml
+
       - name: Generate dbt docs
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
