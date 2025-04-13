@@ -30,20 +30,20 @@ jobs:
           key="${AWS_ACCESS_KEY_ID}"
           echo "AWS key is set (first 4 chars): ${key:0:4}"
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
 
       - name: Test AWS credentials
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: eu-west-1  # or your actual region
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: aws sts get-caller-identity
 
       - name: Run dbt build
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: eu-west-1
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
           dbt deps
           dbt build
