@@ -8,7 +8,7 @@ with orders as (
         status
     from {{ ref('stg_orders') }}
     {% if is_incremental() %}
-    where updated_at > (select max(order_date) from {{ this }})
+    where order_date > (select max(order_date) from {{ this }})
     {% endif %}
 ),
 
