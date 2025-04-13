@@ -1,42 +1,46 @@
-name: Build and deploy dbt docs
+name: Build and Deploy dbt Docs
 
 on:
   push:
     branches: [main]
 
 permissions:
+  contents: read
   pages: write
   id-token: write
-  contents: read
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install dbt
         run: pip install dbt-athena-community
 
-      - name: Create dummy profiles.yml
+      - name: Write dummy dbt profile
         run: |
           mkdir -p ~/.dbt
-          echo "default:
-  target: dev
-  outputs:
-    dev:
-      type: athena
-      database: dummy
-      s3_staging_dir: s3://dummy
-      region_name: eu-west-1
-      work_group: primary" > ~/.dbt/profiles.yml
+          echo "default:" > ~/.dbt/profiles.yml
+          echo "  target: dev" >> ~/.dbt/profiles.yml
+          echo "  outputs:" >> ~/.dbt/profiles.yml
+          echo "    dev:" >> ~/.dbt/profiles.yml
+          echo "      type: athena" >> ~/.dbt/profiles.yml
+          echo "      database: dummy" >> ~/.dbt/profiles.yml
+          echo "      s3_staging_dir: s3://dummy" >> ~/.dbt/profiles.yml
+          echo "      region_name: eu-west-1" >> ~/.dbt/profiles.yml
+          echo "      work_group: primary" >> ~/.dbt/profiles.yml
 
       - name: Build dbt docs
         run: |
@@ -44,7 +48,7 @@ jobs:
           dbt compile
           dbt docs generate
 
-      - name: Upload built docs as artifact
+      - name: Upload artifact to GitHub Pages
         uses: actions/upload-pages-artifact@v2
         with:
           path: target
