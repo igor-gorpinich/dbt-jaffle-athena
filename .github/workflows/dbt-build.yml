@@ -35,7 +35,7 @@ jobs:
           name: manifest
           path: .dbt-state
 
-      - name: Run state-aware dbt build
+      - name: State-aware dbt build
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -43,8 +43,13 @@ jobs:
         run: |
           dbt deps
           dbt compile
-          dbt build --select state:modified+ --defer --state .dbt-state/
-
+          if [ -f .dbt-state/manifest.json ]; then
+            echo "Running state-aware build"
+            dbt build --select state:modified+ --defer --state .dbt-state/
+          else
+            echo "No previous manifest found — running full build"
+            dbt build
+          fi
       - name: Upload new manifest.json
         uses: actions/upload-artifact@v2
         with:
