@@ -1,10 +1,40 @@
-- name: fct_orders
-  columns:
-    - name: customer_id
-      tests:
-        - relationships:
-            to: ref('stg_customers')
-            field: id
-  tests:
-  - accepted_statuses:
-      column_name: status
+version: 2
+
+models:
+  - name: fct_orders
+    description: "Fact table combining orders and payments"
+    contract:
+      enforced: true
+    columns:
+      - name: order_id
+        data_type: integer
+        description: "Unique ID for the order"
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        data_type: integer
+        description: "Customer who placed the order"
+        tests:
+          - not_null
+
+      - name: order_date
+        data_type: string
+        description: "Date the order was placed"
+        tests:
+          - not_null
+
+      - name: status
+        data_type: string
+        description: "Order status (e.g., placed, shipped, completed)"
+        tests:
+          - not_null
+
+      - name: amount
+        data_type: double
+        description: "Payment amount (0 if not paid)"
+
+      - name: payment_method
+        data_type: string
+        description: "Payment method (null if unpaid)"

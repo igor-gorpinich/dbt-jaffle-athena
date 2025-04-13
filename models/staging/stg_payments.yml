@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: stg_payments
+    description: "Staging model for payments"
+    contract:
+      enforced: true
+    columns:
+      - name: payment_id
+        data_type: integer
+        description: "Unique identifier for the payment"
+        tests:
+          - not_null
+          - unique
+      - name: order_id
+        data_type: integer
+        description: "Order this payment is associated with"
+        tests:
+          - not_null
+      - name: payment_method
+        data_type: string
+        description: "Payment method used"
+        tests:
+          - not_null
+      - name: amount
+        data_type: double
+        description: "Amount paid"
+        tests:
+          - not_null

@@ -18,6 +18,8 @@ clean-targets:
 
 models:
   jaffle_athena:
+    +contract:
+      enforced: true
     +materialized: view
     +quote_columns: false
     +quoting:

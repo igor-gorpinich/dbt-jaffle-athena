@@ -1,21 +1,29 @@
+version: 2
+
 models:
   - name: stg_orders
     description: "Staging model for orders"
+    contract:
+      enforced: true
     columns:
       - name: order_id
+        data_type: integer
         description: "Unique identifier for each order"
         tests:
           - not_null
           - unique
       - name: customer_id
+        data_type: integer
         description: "Identifier for the customer who placed the order"
         tests:
           - not_null
       - name: order_date
+        data_type: string
         description: "Date when the order was placed"
         tests:
           - not_null
       - name: status
+        data_type: string
         description: "Current status of the order"
         tests:
           - not_null

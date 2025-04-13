@@ -1,16 +1,20 @@
 version: 2
 
 models:
-  - name: stg_customers
+  - name: dim_customers
+    description: "Dimension table for customer info"
     contract:
       enforced: true
     columns:
       - name: customer_id
         data_type: integer
+        description: "Unique customer ID"
         tests:
           - not_null
           - unique
       - name: first_name
         data_type: string
+        description: "Customer's first name"
       - name: last_name
         data_type: string
+        description: "Customer's last name"
