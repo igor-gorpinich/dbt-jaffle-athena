@@ -1,8 +1,8 @@
 name: jaffle_athena
+profile: jaffle_athena 
 version: '1.0'
 config-version: 2
 
-profile: default
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
