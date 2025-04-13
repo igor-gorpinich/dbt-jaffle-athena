@@ -38,7 +38,7 @@ jobs:
       - name: Download previous manifest from S3
         run: |
           mkdir -p .dbt-state
-          aws s3 cp s3://my-dbt-deploy-artifacts/manifest.json .dbt-state/manifest.json || echo "No previous manifest"
+          aws s3 cp s3://igor-athena-bucket-20250412/deploy-dbt/manifest.json .dbt-state/manifest.json || echo "No previous manifest"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -63,7 +63,7 @@ jobs:
 
       - name: Upload new manifest to S3
         run: |
-          aws s3 cp target/manifest.json s3://my-dbt-deploy-artifacts/manifest.json
+          aws s3 cp target/manifest.json s3://igor-athena-bucket-20250412/deploy-dbt/manifest.json
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
