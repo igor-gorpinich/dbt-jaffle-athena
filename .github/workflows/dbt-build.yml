@@ -28,6 +28,13 @@ jobs:
           echo "${{ secrets.DBT_PROFILES_YML }}" > ~/.dbt/profiles.yml
 
 
+
+      - name: Download previous manifest.json
+        uses: actions/download-artifact@v3
+        with:
+          name: manifest
+          path: .dbt-state
+
       - name: Run state-aware dbt build
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
