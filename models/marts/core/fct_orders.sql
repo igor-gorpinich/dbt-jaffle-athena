@@ -1,9 +1,23 @@
+{{ config(materialized='incremental', unique_key='order_id') }}
+
 with orders as (
-    select * from {{ ref('stg_orders') }}
+    select
+        order_id,
+        customer_id,
+        order_date,
+        status
+    from {{ ref('stg_orders') }}
+    {% if is_incremental() %}
+    where updated_at > (select max(order_date) from {{ this }})
+    {% endif %}
 ),
 
 payments as (
-    select * from {{ ref('stg_payments') }}
+    select
+        order_id,
+        amount,
+        payment_method
+    from {{ ref('stg_payments') }}
 ),
 
 order_payments as (
