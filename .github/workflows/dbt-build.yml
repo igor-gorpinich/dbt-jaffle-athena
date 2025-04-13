@@ -18,7 +18,7 @@ jobs:
   dbt-deploy:
     runs-on: ubuntu-latest
     container:
-      image: yourdockerhub/dbt-athena:latest
+      image: ghcr.io/dbt-labs/dbt-athena:1.9.3
 
     steps:
       - name: Checkout repo
