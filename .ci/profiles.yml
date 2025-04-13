@@ -1,0 +1,10 @@
+jaffle_athena:
+  target: dev
+  outputs:
+    dev:
+      type: athena
+      database: AwsDataCatalog
+      region_name: eu-west-1
+      schema: jaffle_athena
+      s3_staging_dir: s3://igor-athena-bucket-20250412/staging/
+      aws_profile_name: default  # uses credentials from ~/.aws/credentials
