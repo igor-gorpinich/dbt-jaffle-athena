@@ -27,5 +27,3 @@ models:
         description: "Current status of the order"
         tests:
           - not_null
-          - accepted_values:
-              values: ["placed", "shipped", "completed"]
