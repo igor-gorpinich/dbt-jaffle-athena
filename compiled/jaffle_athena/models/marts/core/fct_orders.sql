@@ -1,9 +1,23 @@
+
+
 with orders as (
-    select * from "AwsDataCatalog"."jaffle_athena"."stg_orders"
+    select
+        order_id,
+        customer_id,
+        order_date,
+        status
+    from "AwsDataCatalog"."jaffle_athena"."stg_orders"
+    
+    where order_date > (select max(order_date) from "AwsDataCatalog"."jaffle_athena"."fct_orders")
+    
 ),
 
 payments as (
-    select * from "AwsDataCatalog"."jaffle_athena"."stg_payments"
+    select
+        order_id,
+        amount,
+        payment_method
+    from "AwsDataCatalog"."jaffle_athena"."stg_payments"
 ),
 
 order_payments as (
