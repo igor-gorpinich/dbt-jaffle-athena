@@ -10,9 +10,9 @@ sources:
     schema: jaffle_athena
     tables:
       - name: raw_orders
-        freshness:
-          warn_after: { count: 9999, period: day }
-          error_after: { count: 9999, period: day }
-        loaded_at_field: order_date
+        # freshness:
+        #   warn_after: { count: 9999, period: day }
+        #   error_after: { count: 9999, period: day }
+        # loaded_at_field: order_date
       - name: raw_customers
       - name: raw_payments
