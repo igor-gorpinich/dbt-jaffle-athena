@@ -1,4 +1,13 @@
-{{ config(materialized='incremental', unique_key='order_id') }}
+{{ config(
+    materialized='table',
+    table_type='iceberg',
+    on_schema_change='append_new_columns',
+    partition_by={
+      "field": "order_date",
+      "data_type": "date"
+    }
+) }}
+
 
 with orders as (
     select

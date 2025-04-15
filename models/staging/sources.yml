@@ -2,17 +2,20 @@ version: 2
 
 sources:
   - name: raw
-    database: AwsDataCatalog
+    database: AwsDataCatalog  # Glue catalog database
+    schema: jaffle_athena     # Glue schema (Athena DB name)
     quoting:
       database: false
       schema: false
       identifier: false
-    schema: jaffle_athena
+
     tables:
       - name: raw_orders
-        # freshness:
-        #   warn_after: { count: 9999, period: day }
-        #   error_after: { count: 9999, period: day }
-        # loaded_at_field: order_date
+        loaded_at_field: order_date  # timestamp field for freshness
+        freshness:
+          warn_after: { count: 12, period: hour }
+          error_after: { count: 24, period: hour }
+
       - name: raw_customers
+
       - name: raw_payments
