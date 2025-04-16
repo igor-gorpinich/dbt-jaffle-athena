@@ -1,5 +1,6 @@
 
 
+
 with orders as (
     select
         order_id,
@@ -7,8 +8,6 @@ with orders as (
         order_date,
         status
     from "AwsDataCatalog"."jaffle_athena"."stg_orders"
-    
-    where order_date > (select max(order_date) from "AwsDataCatalog"."jaffle_athena"."fct_orders")
     
 ),
 
