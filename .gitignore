@@ -16,3 +16,4 @@ target/
 dbt.log
 manifest.json
 run_results.json
+.vscode/mcp.json

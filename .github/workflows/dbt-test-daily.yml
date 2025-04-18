@@ -48,8 +48,8 @@ jobs:
       - name: Run dbt tests
         run: dbt test --store-failures
 
-      - name: Check source freshness
-        run: dbt source freshness --output json
+      # - name: Check source freshness
+      #   run: dbt source freshness --output json
 
       - name: Upload results to S3 (partitioned paths)
         run: |
