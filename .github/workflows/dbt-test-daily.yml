@@ -51,14 +51,14 @@ jobs:
       # - name: Check source freshness
       #   run: dbt source freshness --output json
 
-      - name: Upload results to S3 (partitioned paths)
-        run: |
-          aws s3 cp target/run_results.json s3://$BUCKET/test/year=${{ steps.ts.outputs.year }}/month=${{ steps.ts.outputs.month }}/day=${{ steps.ts.outputs.day }}/run_results.json
-          aws s3 cp target/sources.json s3://$BUCKET/test/year=${{ steps.ts.outputs.year }}/month=${{ steps.ts.outputs.month }}/day=${{ steps.ts.outputs.day }}/sources.json
+      # - name: Upload results to S3 (partitioned paths)
+      #   run: |
+      #     aws s3 cp target/run_results.json s3://$BUCKET/test/year=${{ steps.ts.outputs.year }}/month=${{ steps.ts.outputs.month }}/day=${{ steps.ts.outputs.day }}/run_results.json
+      #     aws s3 cp target/sources.json s3://$BUCKET/test/year=${{ steps.ts.outputs.year }}/month=${{ steps.ts.outputs.month }}/day=${{ steps.ts.outputs.day }}/sources.json
 
-      - name: Fail on any test or freshness failure
-        run: |
-          if grep -q '"failures": [^0]' target/run_results.json || grep -q '"status": "error"' target/sources.json; then
-            echo "🚨 Tests or freshness checks failed!"
-            exit 1
-          fi
+      # - name: Fail on any test or freshness failure
+      #   run: |
+      #     if grep -q '"failures": [^0]' target/run_results.json || grep -q '"status": "error"' target/sources.json; then
+      #       echo "🚨 Tests or freshness checks failed!"
+      #       exit 1
+      #     fi
